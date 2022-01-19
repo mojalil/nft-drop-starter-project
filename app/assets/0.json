@@ -1,0 +1,23 @@
+{
+  "name": "Mars_People",
+  "symbol": "",
+  "image": "0.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "0.png",
+        "type": "image/png"
+      }
+    ],
+    "collection": {
+      "name": "Metal Slug"
+    },
+    "creators": [
+      {
+        "address": "HvxSAvkG5QmtySgGgxioYdJDtg4q1uRN3PqUprUXgroe",
+        "share": 100
+      }
+    ]
+  }
+}
+
