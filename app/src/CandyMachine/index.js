@@ -206,8 +206,8 @@ const CandyMachine = ({ walletAddress }) => {
     try {
       const mint = web3.Keypair.generate();
       const token = await getTokenWallet(
-        walletAddress.publicKey,
-        mint.publicKey
+        walletAddress,
+        mint.publicKey.toString()
       );
       const metadata = await getMetadata(mint.publicKey);
       const masterEdition = await getMasterEdition(mint.publicKey);
@@ -220,13 +220,13 @@ const CandyMachine = ({ walletAddress }) => {
       const accounts = {
         config,
         candyMachine: process.env.REACT_APP_CANDY_MACHINE_ID,
-        payer: walletAddress.publicKey,
+        payer: walletAddress,
         wallet: process.env.REACT_APP_TREASURY_ADDRESS,
         mint: mint.publicKey,
         metadata,
         masterEdition,
-        mintAuthority: walletAddress.publicKey,
-        updateAuthority: walletAddress.publicKey,
+        mintAuthority: walletAddress,
+        updateAuthority: walletAddress,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
@@ -247,20 +247,20 @@ const CandyMachine = ({ walletAddress }) => {
           TOKEN_PROGRAM_ID,
           mint.publicKey,
           0,
-          walletAddress.publicKey,
-          walletAddress.publicKey
+          walletAddress,
+          walletAddress
         ),
         createAssociatedTokenAccountInstruction(
           token,
-          walletAddress.publicKey,
-          walletAddress.publicKey,
+          walletAddress,
+          walletAddress,
           mint.publicKey
         ),
         Token.createMintToInstruction(
           TOKEN_PROGRAM_ID,
           mint.publicKey,
           token,
-          walletAddress.publicKey,
+          walletAddress,
           [],
           1
         ),
