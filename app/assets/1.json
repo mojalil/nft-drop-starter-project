@@ -1,0 +1,23 @@
+{
+  "name": "Whip",
+  "symbol": "",
+  "image": "1.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "1.png",
+        "type": "image/png"
+      }
+    ],
+    "collection": {
+      "name": "Metal Slug"
+    },
+    "creators": [
+      {
+        "address": "HvxSAvkG5QmtySgGgxioYdJDtg4q1uRN3PqUprUXgroe",
+        "share": 100
+      }
+    ]
+  }
+}
+

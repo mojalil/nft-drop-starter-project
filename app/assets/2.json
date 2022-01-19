@@ -1,0 +1,23 @@
+{
+  "name": "Zombie_Marco",
+  "symbol": "",
+  "image": "2.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "2.png",
+        "type": "image/png"
+      }
+    ],
+    "collection": {
+      "name": "Metal Slug"
+    },
+    "creators": [
+      {
+        "address": "HvxSAvkG5QmtySgGgxioYdJDtg4q1uRN3PqUprUXgroe",
+        "share": 100
+      }
+    ]
+  }
+}
+
