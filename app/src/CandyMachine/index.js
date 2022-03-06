@@ -27,6 +27,14 @@ const MAX_CREATOR_LEN = 32 + 1 + 1;
 
 const CandyMachine = ({ walletAddress }) => {
 
+  const getCandyMachineCreator = async (candyMachine) => {
+    const candyMachineID = new PublicKey(candyMachine);
+    return await web3.PublicKey.findProgramAddress(
+        [Buffer.from('candy_machine'), candyMachineID.toBuffer()],
+        candyMachineProgram,
+    );
+  };
+
   const [candyMachine, setCandyMachine] = useState(null);
   // Actions
   const getProvider = () => {
@@ -161,119 +169,6 @@ const CandyMachine = ({ walletAddress }) => {
         SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
       )
     )[0];
-  };
-
-  const mintToken = async () => {
-    try {
-      const mint = web3.Keypair.generate();
-      const token = await getTokenWallet(
-        walletAddress,
-        mint.publicKey.toString()
-      );
-      const metadata = await getMetadata(mint.publicKey);
-      const masterEdition = await getMasterEdition(mint.publicKey);
-      const rpcHost = process.env.REACT_APP_SOLANA_RPC_HOST;
-      const connection = new Connection(rpcHost);
-      const rent = await connection.getMinimumBalanceForRentExemption(
-        MintLayout.span
-      );
-
-      const accounts = {
-        config,
-        candyMachine: process.env.REACT_APP_CANDY_MACHINE_ID,
-        payer: walletAddress,
-        wallet: process.env.REACT_APP_TREASURY_ADDRESS,
-        mint: mint.publicKey,
-        metadata,
-        masterEdition,
-        mintAuthority: walletAddress,
-        updateAuthority: walletAddress,
-        tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-        clock: web3.SYSVAR_CLOCK_PUBKEY,
-      };
-
-      const signers = [mint];
-      const instructions = [
-        web3.SystemProgram.createAccount({
-          fromPubkey: walletAddress.publicKey,
-          newAccountPubkey: mint.publicKey,
-          space: MintLayout.span,
-          lamports: rent,
-          programId: TOKEN_PROGRAM_ID,
-        }),
-        Token.createInitMintInstruction(
-          TOKEN_PROGRAM_ID,
-          mint.publicKey,
-          0,
-          walletAddress,
-          walletAddress
-        ),
-        createAssociatedTokenAccountInstruction(
-          token,
-          walletAddress,
-          walletAddress,
-          mint.publicKey
-        ),
-        Token.createMintToInstruction(
-          TOKEN_PROGRAM_ID,
-          mint.publicKey,
-          token,
-          walletAddress,
-          [],
-          1
-        ),
-      ];
-
-      const provider = getProvider();
-      const idl = await Program.fetchIdl(candyMachineProgram, provider);
-      const program = new Program(idl, candyMachineProgram, provider);
-
-      const txn = await program.rpc.mintNft({
-        accounts,
-        signers,
-        instructions,
-      });
-
-      console.log('txn:', txn);
-
-      // Setup listener
-      connection.onSignatureWithOptions(
-        txn,
-        async (notification, context) => {
-          if (notification.type === 'status') {
-            console.log('Receievd status event');
-
-            const { result } = notification;
-            if (!result.err) {
-              console.log('NFT Minted!');
-            }
-          }
-        },
-        { commitment: 'processed' }
-      );
-    } catch (error) {
-      let message = error.msg || 'Minting failed! Please try again!';
-
-      if (!error.msg) {
-        if (error.message.indexOf('0x138')) {
-        } else if (error.message.indexOf('0x137')) {
-          message = `SOLD OUT!`;
-        } else if (error.message.indexOf('0x135')) {
-          message = `Insufficient funds to mint. Please fund your wallet.`;
-        }
-      } else {
-        if (error.code === 311) {
-          message = `SOLD OUT!`;
-        } else if (error.code === 312) {
-          message = `Minting period hasn't started yet.`;
-        }
-      }
-
-      console.warn(message);
-    }
   };
 
   const createAssociatedTokenAccountInstruction = (
